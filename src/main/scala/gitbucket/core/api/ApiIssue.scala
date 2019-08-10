@@ -18,7 +18,7 @@ case class ApiIssue(
   created_at: Date,
   updated_at: Date,
   body: String,
-  milestone_id: int,
+  milestoneId: int,
   milestone: Object
 )(repositoryName: RepositoryName, isPullRequest: Boolean) {
   val id = 0 // dummy id
@@ -49,7 +49,7 @@ object ApiIssue {
       body = issue.content.getOrElse(""),
       created_at = issue.registeredDate,
       updated_at = issue.updatedDate,
-      milestone_id  = issue.milestoneId,
+      milestoneId  = issue.milestoneId,
       milestone = getMilestone(issue.RepositoryOwner: String, issue.RepositoryName, issue.milestoneId: Int)
     )(repositoryName, issue.isPullRequest)
 }
