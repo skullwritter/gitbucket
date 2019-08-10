@@ -19,7 +19,7 @@ case class ApiIssue(
   updated_at: Date,
   body: String,
   milestoneId: int,
-  milestone: Object
+  milestone: option[Object]
 )(repositoryName: RepositoryName, isPullRequest: Boolean) {
   val id = 0 // dummy id
   val comments_url = ApiPath(s"/api/v3/repos/${repositoryName.fullName}/issues/${number}/comments")
@@ -39,6 +39,8 @@ case class ApiIssue(
 }
 
 object ApiIssue {
+  
+  def milestone_get = getMilestone(issue.RepositoryOwner: String, issue.RepositoryName, issue.milestoneId: Int)
   def apply(issue: Issue, repositoryName: RepositoryName, user: ApiUser, labels: List[ApiLabel]): ApiIssue =
     ApiIssue(
       number = issue.issueId,
@@ -50,6 +52,6 @@ object ApiIssue {
       created_at = issue.registeredDate,
       updated_at = issue.updatedDate,
       milestoneId  = issue.milestoneId,
-      milestone = getMilestone(issue.RepositoryOwner: String, issue.RepositoryName, issue.milestoneId: Int)
+      milestone = issue.milestone
     )(repositoryName, issue.isPullRequest)
 }
