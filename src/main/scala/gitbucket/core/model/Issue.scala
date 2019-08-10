@@ -41,7 +41,7 @@ trait IssueComponent extends TemplateComponent { self: Profile =>
         issueId,
         openedUserName,
         milestoneId.?,
-        milestone.?
+        milestone.?,
         priorityId.?,
         assignedUserName.?,
         title,
