@@ -19,7 +19,7 @@ case class ApiIssue(
   updated_at: Date,
   body: String,
   milestoneId: int,
-  milestone: List[Milestone]
+  milestone: Option[List[Milestone]]
 )(repositoryName: RepositoryName, isPullRequest: Boolean) {
   val id = 0 // dummy id
   val comments_url = ApiPath(s"/api/v3/repos/${repositoryName.fullName}/issues/${number}/comments")
