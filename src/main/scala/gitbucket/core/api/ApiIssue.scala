@@ -39,8 +39,6 @@ case class ApiIssue(
 }
 
 object ApiIssue {
-  
-  def milestone_get = getMilestone(issue.RepositoryOwner: String, issue.RepositoryName, issue.milestoneId: Int)
   def apply(issue: Issue, repositoryName: RepositoryName, user: ApiUser, labels: List[ApiLabel]): ApiIssue =
     ApiIssue(
       number = issue.issueId,
