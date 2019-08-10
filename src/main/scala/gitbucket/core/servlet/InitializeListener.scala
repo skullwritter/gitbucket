@@ -9,9 +9,12 @@ import gitbucket.core.plugin.PluginRegistry
 import gitbucket.core.service.{ActivityService, SystemSettingsService}
 import gitbucket.core.util.DatabaseConfig
 import gitbucket.core.util.Directory._
-import gitbucket.core.util.SyntaxSugars._
 import gitbucket.core.util.JDBCUtil._
 import gitbucket.core.model.Profile.profile.blockingApi._
+// Imported names have higher precedence than names, defined in other files.
+// If Database is not bound by explicit import, then "Database" refers to the Database introduced by the wildcard import above.
+import gitbucket.core.servlet.Database
+
 import io.github.gitbucket.solidbase.Solidbase
 import io.github.gitbucket.solidbase.manager.JDBCVersionManager
 import javax.servlet.{ServletContextEvent, ServletContextListener}
@@ -21,7 +24,8 @@ import org.slf4j.LoggerFactory
 import akka.actor.{Actor, ActorSystem, Props}
 import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
+import scala.util.Using
 
 /**
  * Initialize GitBucket system.
@@ -84,7 +88,7 @@ class InitializeListener extends ServletContextListener with SystemSettingsServi
       }
 
       // Install bundled plugins
-      extractBundledPlugins(gitbucketVersion)
+      extractBundledPlugins()
 
       // Load plugins
       logger.info("Initialize plugins")
@@ -134,11 +138,11 @@ class InitializeListener extends ServletContextListener with SystemSettingsServi
     }
   }
 
-  private def extractBundledPlugins(gitbucketVersion: String): Unit = {
+  private def extractBundledPlugins(): Unit = {
     logger.info("Extract bundled plugins...")
     val cl = Thread.currentThread.getContextClassLoader
     try {
-      using(cl.getResourceAsStream("bundle-plugins.txt")) { pluginsFile =>
+      Using.resource(cl.getResourceAsStream("bundle-plugins.txt")) { pluginsFile =>
         if (pluginsFile != null) {
           val plugins = IOUtils.readLines(pluginsFile, "UTF-8")
           val gitbucketVersion = GitBucketCoreModule.getVersions.asScala.last.getVersion
@@ -146,14 +150,14 @@ class InitializeListener extends ServletContextListener with SystemSettingsServi
           plugins.asScala.foreach { plugin =>
             plugin.trim.split(":") match {
               case Array(pluginId, pluginVersion) =>
-                val fileName = s"gitbucket-${pluginId}-plugin-gitbucket_${gitbucketVersion}-${pluginVersion}.jar"
+                val fileName = s"gitbucket-${pluginId}-plugin-${pluginVersion}.jar"
                 val in = cl.getResourceAsStream("plugins/" + fileName)
                 if (in != null) {
                   val file = new File(PluginHome, fileName)
                   logger.info(s"Extract to ${file.getAbsolutePath}")
 
                   FileUtils.forceMkdirParent(file)
-                  using(in, new FileOutputStream(file)) {
+                  Using.resources(in, new FileOutputStream(file)) {
                     case (in, out) => IOUtils.copy(in, out)
                   }
                 }

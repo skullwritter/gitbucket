@@ -8,12 +8,12 @@ import gitbucket.core.service.PullRequestService.PullRequestLimit
 import gitbucket.core.util.Directory.getRepositoryDir
 import gitbucket.core.util.Implicits._
 import gitbucket.core.util.JGitUtil.CommitInfo
-import gitbucket.core.util.SyntaxSugars.using
 import gitbucket.core.util._
 import org.eclipse.jgit.api.Git
 import org.scalatra.NoContent
+import scala.util.Using
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 trait ApiPullRequestControllerBase extends ControllerBase {
   self: AccountService
@@ -173,7 +173,7 @@ trait ApiPullRequestControllerBase extends ControllerBase {
       issueId =>
         getPullRequest(owner, name, issueId) map {
           case (issue, pullreq) =>
-            using(Git.open(getRepositoryDir(owner, name))) { git =>
+            Using.resource(Git.open(getRepositoryDir(owner, name))) { git =>
               val oldId = git.getRepository.resolve(pullreq.commitIdFrom)
               val newId = git.getRepository.resolve(pullreq.commitIdTo)
               val repoFullName = RepositoryName(repository)
