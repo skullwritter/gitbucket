@@ -18,7 +18,7 @@ case class ApiIssue(
   created_at: Date,
   updated_at: Date,
   body: String,
-  milestoneId: int,
+  milestoneId: Option[int] = None,
   milestone: Option[List[Milestone]] = None
 )(repositoryName: RepositoryName, isPullRequest: Boolean) {
   val id = 0 // dummy id
