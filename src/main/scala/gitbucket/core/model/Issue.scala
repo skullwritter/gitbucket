@@ -41,6 +41,7 @@ trait IssueComponent extends TemplateComponent { self: Profile =>
         issueId,
         openedUserName,
         milestoneId.?,
+        milestone.?
         priorityId.?,
         assignedUserName.?,
         title,
@@ -61,6 +62,7 @@ case class Issue(
   issueId: Int,
   openedUserName: String,
   milestoneId: Option[Int],
+  milestone: Option[Object],
   priorityId: Option[Int],
   assignedUserName: Option[String],
   title: String,
