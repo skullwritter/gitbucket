@@ -2,6 +2,7 @@ package gitbucket.core.api
 
 import gitbucket.core.model.Issue
 import gitbucket.core.util.RepositoryName
+import gitbucket.core.util.MilestoneComponent
 
 import java.util.Date
 
